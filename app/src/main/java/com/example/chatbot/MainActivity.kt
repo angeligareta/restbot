@@ -27,7 +27,6 @@ class MainActivity : AppCompatActivity(), AIListener {
     private val ACCESS_TOKEN = "273d269822e041f7875ca797bf3b9217"
     private val REQUEST = 200
 
-    private lateinit var speaker: Speaker
     private lateinit var messageAdapter: MessageAdapter
 
     private lateinit var mMessagesView: ListView
@@ -49,7 +48,7 @@ class MainActivity : AppCompatActivity(), AIListener {
         mMessagesView = findViewById(R.id.messages_view)
 
         // Initialize the speaker that will speak the query results
-        speaker = Speaker(this)
+        Speaker.setContext(this)
 
         // Assign the message view adapter to an instance of the MessageAdapter class
         messageAdapter = MessageAdapter(this)
@@ -127,17 +126,16 @@ class MainActivity : AppCompatActivity(), AIListener {
         val query = result?.resolvedQuery
         val queryResponse = result?.fulfillment?.speech
 
-
         if (query != null && queryResponse != null) {
             sendMessage(query, false)
             sendMessage(queryResponse, true)
-            speaker.play(queryResponse)
+            Speaker.play(queryResponse)
         }
 
         // Get the intent name and parameters and let IntentHandler handle it.
         val intentName = result?.metadata?.intentName
         val intentParameters = if (result != null) result.parameters else HashMap<String, JsonElement>()
-        //IntentHandler.handleIntent(intentName, intentParameters)
+        IntentHandler.handleIntent(intentName, intentParameters)
     }
 
     /**
