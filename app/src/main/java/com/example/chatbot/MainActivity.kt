@@ -8,6 +8,7 @@ import ai.api.android.AIService
 import ai.api.model.AIError
 import ai.api.model.AIRequest
 import ai.api.model.AIResponse
+import ai.api.model.Result
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -18,6 +19,9 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.google.gson.JsonElement
 import android.widget.*
+import com.google.api.services.dialogflow.v2.Dialogflow
+import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2DetectIntentResponse
+import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2EntityType
 import java.util.*
 
 
@@ -56,6 +60,10 @@ class MainActivity : AppCompatActivity(), AIListener {
 
         checkPermissions()
         configureAssistant()
+
+        // Instantiates a client
+
+        Dialogflow.Projects.Agent.EntityTypes.Entities
     }
 
     /**
@@ -114,6 +122,8 @@ class MainActivity : AppCompatActivity(), AIListener {
             aiRequest.setQuery(query)
             RequestTask(this, aiDataService, customAIServiceContext).execute(aiRequest)
         }
+
+        var entity = GoogleCloudDialogflowV2EntityType()
     }
 
     /**
@@ -132,6 +142,26 @@ class MainActivity : AppCompatActivity(), AIListener {
             Speaker.play(queryResponse)
         }
 
+        handleIntent(result)
+    }
+
+    /**
+     * Method that is called when an aiRequest has an aiResponse.
+     * It adds the message to the list view as incoming.
+     */
+    fun requestCallback(aiResponse: AIResponse?) {
+        val queryResponse = aiResponse?.result?.fulfillment?.speech
+
+        if (queryResponse != null) {
+            sendMessage(queryResponse, true)
+            handleIntent(aiResponse?.result)
+        }
+    }
+
+    /**
+     * Handle intent with IntentHandler object.
+     */
+    private fun handleIntent(result: Result?) {
         // Get the intent name and parameters and let IntentHandler handle it.
         val intentName = result?.metadata?.intentName
         val intentParameters = if (result != null) result.parameters else HashMap<String, JsonElement>()
@@ -148,19 +178,6 @@ class MainActivity : AppCompatActivity(), AIListener {
         runOnUiThread {
             messageAdapter.addMessage(message)
             mMessagesView.setSelection(mMessagesView.count - 1)
-        }
-    }
-
-
-    /**
-     * Method that is called when an aiRequest has an aiResponse.
-     * It adds the message to the list view as incoming.
-     */
-    fun requestCallback(aiResponse: AIResponse?) {
-        val queryResponse = aiResponse?.result?.fulfillment?.speech
-
-        if (queryResponse != null) {
-            sendMessage(queryResponse, true)
         }
     }
 
