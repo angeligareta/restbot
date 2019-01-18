@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RestBot Pro</string>
+    <string name="input_message_hint">Escribe un mensaje</string>
+</resources>

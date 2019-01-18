@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Template of an incoming message. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <layer-list>
+            <!-- SHADOW LAYER -->
+            <item android:left="3dp" android:top="3dp">
+                <shape>
+                    <solid android:color="#29000000" />
+                    <corners android:topLeftRadius="3dp" android:radius="22dp" />
+                </shape>
+            </item>
+            <!-- CONTENT LAYER -->
+            <item android:bottom="4dp" android:right="4dp">
+                <shape>
+                    <solid android:color="@color/colorIncomingBackground" />
+                    <corners android:topLeftRadius="3dp" android:radius="22dp" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+</selector>

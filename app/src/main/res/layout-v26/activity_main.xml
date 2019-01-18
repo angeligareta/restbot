@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:clipToPadding="false"
+    android:focusableInTouchMode="true"
+    tools:context=".MainActivity">
+
+    <ListView
+        android:layout_width="match_parent"
+        android:id="@+id/messages_view"
+        android:layout_weight="2"
+        android:divider="#fff"
+        android:layout_height="0dp"
+        />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffff"
+        android:orientation="horizontal"
+        android:paddingTop="12dp"
+        android:paddingBottom="20dp">
+
+        <EditText
+            android:id="@+id/input_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:hint="@string/input_message_hint"
+            android:inputType="text"
+            android:paddingHorizontal="20dp"
+            android:layout_marginHorizontal="5dp"
+            android:text="" />
+
+        <ImageButton
+            android:id="@+id/bt_send"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_alignEnd="@id/input_text"
+            android:layout_marginHorizontal="6dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/ic_send_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/bt_listen"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_alignEnd="@id/bt_send"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/ic_microphone" />
+
+    </LinearLayout>
+</LinearLayout>
