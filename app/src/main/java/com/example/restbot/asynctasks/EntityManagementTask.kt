@@ -7,6 +7,7 @@ import com.google.gson.JsonParser
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -20,8 +21,8 @@ const val TAG = "EntityManagementTask"
  */
 enum class EntityQueryType(var isGetRequest: Boolean) {
     GET_ENTRIES_OF_ENTITY(true),
-    GET_ENTRIES_OF_SUBENTITY(true)
-    //SET_ENTRIES()
+    GET_ENTRIES_OF_SUBENTITY(true),
+    PUT_ENTRIES(false)
 }
 
 /**
@@ -36,7 +37,7 @@ enum class EntityName(val entityName : String) {
 /**
  * Class that represent the type of an Entity Query, and the name and values of the sub-entity is being queried.
  */
-class EntityQuery(val entityQueryType: EntityQueryType, val entityName: EntityName, val subEntityName: String?)
+class EntityQuery(val entityQueryType: EntityQueryType, val entityName: EntityName, val subEntityName: String?, val entityJson : String? = null)
 
 /**
  * Data Structure for the result of an entity management task.
@@ -107,19 +108,17 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<EntityManage
                     val subEntitiesJsonArray = jsonObject.getJSONArray("entries")
                     entityManagementTaskResult.jsonRaw = subEntitiesJsonArray.toString()
                 }
-                /*else if (entityQuery.entityType == EntityQueryType.SET_ENTRIES) {
+                else if (entityQuery.entityQueryType == EntityQueryType.PUT_ENTRIES) {
                     val connection = getPostConnection()
 
-                    val writer = OutputStreamWriter(connection.outputStream)
-                    writer.write("[ " + entityQuery.subEntityValues.toString() + " ]")
+                    val writer = OutputStreamWriter(connection.outputStream, "utf-16")
+                    writer.write(entityQuery.entityJson)
                     writer.flush()
                     writer.close()
 
-                    //TODO -> USE EntityManagementTask().execute(EntityQuery(EntityQueryType.GET_ENTRIES, "meat", null))
-
                     connection.connect()
-                    queryResponse = connection.responseMessage
-                }*/
+                    entityManagementTaskResult.jsonRaw = connection.responseMessage
+                }
 
                 Log.d(TAG, "RESPONSE -> ${entityManagementTaskResult.jsonRaw}")
                 queriesResponses.add(entityManagementTaskResult)
@@ -163,14 +162,13 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<EntityManage
      * Function that returns a connection for setting entries of an entity.
      */
     private fun getPostConnection() : HttpURLConnection {
-        // TODO : Language can be changed
-        var connection = URL("https://api.api.ai/v1/entities/food/entries").
+        var connection = URL("https://api.api.ai/v1/entities?v=20150910&lang=es").
                 openConnection() as HttpURLConnection
 
         connection.readTimeout = 15000
         connection.connectTimeout = 15000
-        connection.setRequestProperty("Content-Type", "application/json")
-        connection.requestMethod = "POST"
+        connection.setRequestProperty("Content-Type", "application/json ; charset=utf-16")
+        connection.requestMethod = "PUT"
         connection.setRequestProperty("Authorization", "Bearer $DEVELOPER_ACCESS_TOKEN")
         connection.doOutput = true
 
