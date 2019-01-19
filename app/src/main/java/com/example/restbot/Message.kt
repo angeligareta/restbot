@@ -1,4 +1,4 @@
-package com.example.chatbot
+package com.example.restbot
 
 /**
  * Class that hold the needed info to render a single message.

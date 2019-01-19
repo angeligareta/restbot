@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.example.chatbot"
+        applicationId "com.example.restbot"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
@@ -28,6 +28,7 @@ android {
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/notice.txt'
         exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/INDEX.LIST'
     }
 }
 
@@ -42,18 +43,20 @@ dependencies {
     // Dialogflow SDK dependencies
     implementation 'ai.api:sdk:2.0.7@aar'
     implementation 'ai.api:libai:1.6.12'
+    implementation 'io.grpc:grpc-okhttp:1.17.1'
 
     // Java V2
-    implementation 'com.google.apis:google-api-services-dialogflow:v2-rev50-1.25.0'
+    //implementation 'com.google.apis:google-api-services-dialogflow:v2-rev50-1.25.0'
+
+    // Java V2 Beta
+    //implementation group: 'com.google.cloud', name: 'google-cloud-dialogflow', version: '0.77.0-alpha'
+
+    // Firebase
+    implementation 'com.google.firebase:firebase-core:16.0.1'
 
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-
-
-
-repositories {
-    mavenCentral()
-}
+apply plugin: 'com.google.gms.google-services'

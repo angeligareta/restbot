@@ -1,14 +1,11 @@
-package com.example.chatbot
+package com.example.restbot
 
 import ai.api.AIConfiguration
 import ai.api.android.AIDataService
 import ai.api.AIListener
 import ai.api.AIServiceContextBuilder
 import ai.api.android.AIService
-import ai.api.model.AIError
-import ai.api.model.AIRequest
-import ai.api.model.AIResponse
-import ai.api.model.Result
+import ai.api.model.*
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -19,10 +16,9 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.google.gson.JsonElement
 import android.widget.*
-import com.google.api.services.dialogflow.v2.Dialogflow
-import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2DetectIntentResponse
-import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2EntityType
-import java.util.*
+import org.json.JSONArray
+import org.json.JSONObject
+import kotlin.collections.HashMap
 
 
 class MainActivity : AppCompatActivity(), AIListener {
@@ -60,10 +56,6 @@ class MainActivity : AppCompatActivity(), AIListener {
 
         checkPermissions()
         configureAssistant()
-
-        // Instantiates a client
-
-        Dialogflow.Projects.Agent.EntityTypes.Entities
     }
 
     /**
@@ -92,6 +84,8 @@ class MainActivity : AppCompatActivity(), AIListener {
      * https://github.com/dialogflow/dialogflow-android-client#running_sample
      */
     private fun configureAssistant() {
+        Log.d("MainActivity", "Configuring...")
+
         // Create an instance of AIConfiguration, specifying the access token, locale, and recognition engine.
         val config = ai.api.android.AIConfiguration(ACCESS_TOKEN,
                 AIConfiguration.SupportedLanguages.Spanish,
@@ -120,10 +114,18 @@ class MainActivity : AppCompatActivity(), AIListener {
             sendMessage(query, false)
 
             aiRequest.setQuery(query)
-            RequestTask(this, aiDataService, customAIServiceContext).execute(aiRequest)
+            AIRequestTask(this, aiDataService, customAIServiceContext).execute(aiRequest)
         }
 
-        var entity = GoogleCloudDialogflowV2EntityType()
+        EntityManagementTask().execute(EntityQuery(EntityQueryType.GET_ENTRIES, "meat", null))
+
+        var array =  JSONArray()
+        array.put("kefir2")
+
+        var data = JSONObject()
+        data.accumulate("value", "kefir")
+        data.accumulate("synonyms", array)
+        EntityManagementTask().execute(EntityQuery(EntityQueryType.SET_ENTRIES, "meat", data))
     }
 
     /**

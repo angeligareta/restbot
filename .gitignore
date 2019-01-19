@@ -2,6 +2,8 @@
 # Created by https://www.gitignore.io/api/kotlin,windows,android,androidstudio
 # Edit at https://www.gitignore.io/?templates=kotlin,windows,android,androidstudio
 
+credentials.json
+
 ### Android ###
 # Built application files
 *.apk

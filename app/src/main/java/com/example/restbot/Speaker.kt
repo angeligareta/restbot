@@ -1,7 +1,6 @@
-package com.example.chatbot
+package com.example.restbot
 
 import android.speech.tts.TextToSpeech
-import java.util.*
 
 /**
  * Object designed to act as a speaker, playing out loud a message in the context received when instantiated.

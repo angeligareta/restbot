@@ -1,4 +1,4 @@
-package com.example.chatbot
+package com.example.restbot
 
 import ai.api.AIServiceContext
 import ai.api.android.AIDataService
@@ -10,7 +10,7 @@ import android.os.AsyncTask
 /**
  * Class designed to handle the communication with the chatbot in an asynchronous way.
  */
-class RequestTask(private val activity: Activity, private val aiDataService : AIDataService, private val customAIServiceContext : AIServiceContext) :
+class AIRequestTask(private val activity: Activity, private val aiDataService : AIDataService, private val customAIServiceContext : AIServiceContext) :
         AsyncTask<AIRequest, Void, AIResponse>() {
 
     /**

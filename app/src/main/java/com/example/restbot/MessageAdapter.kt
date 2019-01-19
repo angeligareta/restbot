@@ -1,4 +1,4 @@
-package com.example.chatbot
+package com.example.restbot
 
 import android.app.Activity
 import android.content.Context

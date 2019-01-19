@@ -1,4 +1,4 @@
-package com.example.chatbot
+package com.example.restbot
 
 
 import android.util.Log
@@ -27,6 +27,10 @@ object IntentHandler {
             // Could notify for further intent implementations
             Log.d(TAG, "Intent $intentName does not have a method")
         }
+    }
+
+    fun welcome(intentParameters : HashMap<String, JsonElement>) {
+
     }
 
     /** METHODS FOR EACH COMPLEX DIALOGFLOW INTENT */
