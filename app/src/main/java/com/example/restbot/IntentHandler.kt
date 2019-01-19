@@ -11,7 +11,7 @@ import java.util.HashMap
 object IntentHandler {
 
     private val TAG = "IntentHandler"
-    private var dailyMenu : ArrayList<String> = ArrayList()
+    private var currentOrder : ArrayList<String> = ArrayList()
     private lateinit var activity : MainActivity
 
     /**
@@ -31,34 +31,65 @@ object IntentHandler {
         }
     }
 
-    fun welcome(intentParameters : HashMap<String, JsonElement>) {
-        this.activity.sendMessage("El menu de comida es: ", true)
-    }
-
     /** METHODS FOR EACH COMPLEX DIALOGFLOW INTENT */
-    fun getDailyMenu(intentParameters : HashMap<String, JsonElement>) {
-        Speaker.play("El menu del dia es ")
-        for (food in dailyMenu) {
-            Speaker.play(food)
-        }
-        Log.d(TAG, "GET DAILY MENU REACHED $intentParameters")
+    // TODO: Change that to Dialogflow fulfillment
+    fun showChooseFood(intentParameters : HashMap<String, JsonElement>) {
+        this.activity.sendMessage("MENÚ DE COMIDA: \n" + MenuManagement.formatMenu(EntityName.FOOD), true)
+        this.activity.sendMessage("¿Qué te apetece de comer? \n", true, 2)
     }
 
-    fun setDailyMenu(intentParameters : HashMap<String, JsonElement>) {
-        Log.d(TAG, "SET DAILY MENU REACHED $intentParameters")
+    fun showChooseDrink(intentParameters : HashMap<String, JsonElement>) {
+        this.activity.sendMessage("CARTA DE BEBIDAS: \n" + MenuManagement.formatMenu(EntityName.DRINK), true)
+        this.activity.sendMessage("¿Qué te apetece de beber? \n", true, 2)
+    }
 
-        val foodList = intentParameters["food"]
-        foodList!!.asJsonArray.forEach { food ->
-            dailyMenu.add(food.asString)
+    fun wantDessertQuestion(intentParameters : HashMap<String, JsonElement>) {
+        this.activity.sendMessage("CARTA DE POSTRES: \n" + MenuManagement.formatMenu(EntityName.DESSERT), true, 1)
+    }
+
+    fun checkOrder(intentParameters : HashMap<String, JsonElement>) {
+        val currentOrderFormatted : String = "PEDIDO ACTUAL: \n" + MenuManagement.SEPARATOR.repeat(27) + "\n" +
+                currentOrder.joinToString(separator = "\n\t ► ", prefix = "\t ► ")
+        this.activity.sendMessage(currentOrderFormatted, true)
+        this.activity.sendMessage("¿Está todo correcto? \n", true, 2)
+    }
+
+    fun checkOrder2(intentParameters : HashMap<String, JsonElement>) {
+        checkOrder(intentParameters)
+    }
+
+    fun askForFood(intentParameters : HashMap<String, JsonElement>) {
+        Log.d(TAG, "ASK FOR FOOD $intentParameters")
+        if (intentParameters.containsKey("quantity")) {
+            currentOrder.add(intentParameters["quantity"]?.asString?.capitalize()
+                    + " de "
+                    + intentParameters[EntityName.FOOD.entityName]?.asString?.capitalize()
+            )
+        }
+    }
+
+    fun askForDrinks(intentParameters : HashMap<String, JsonElement>) {
+        Log.d(TAG, "ASK FOR FOOD $intentParameters")
+        if (intentParameters.containsKey("quantity")) {
+            currentOrder.add(intentParameters["quantity"]?.asString?.capitalize()
+                    + " de "
+                    + intentParameters[EntityName.DRINK.entityName]?.asString?.capitalize()
+            )
+        }
+    }
+
+    fun askForDessert(intentParameters : HashMap<String, JsonElement>) {
+        Log.d(TAG, "ASK FOR FOOD $intentParameters")
+        if (intentParameters.containsKey("quantity")) {
+            currentOrder.add(intentParameters["quantity"]?.asString?.capitalize()
+                    + " de "
+                    + intentParameters[EntityName.DESSERT.entityName]?.asString?.capitalize()
+            )
         }
     }
 
     fun getBill(intentParameters : HashMap<String, JsonElement>) {
         Log.d(TAG, "GET BILL REACHED $intentParameters")
-    }
-
-    fun askForFood(intentParameters : HashMap<String, JsonElement>) {
-        Log.d(TAG, "ASK FOR FOOD $intentParameters")
     }
 
 }
