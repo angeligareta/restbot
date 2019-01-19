@@ -12,10 +12,10 @@ import java.lang.Exception
  * Object that download the entries from the Dialogflow database and assign the values of the
  * different menus to a local database.
  */
-object MenuHandler {
+object LocalDatabaseHandler {
 
     const val SEPARATOR = "-"
-    private var TAG = "MenuHandler"
+    private var TAG = "LocalDatabaseHandler"
 
     // TODO: Change it to a Local DataBase
     private var foodMenu = LinkedHashMap<String, ArrayList<String>>()

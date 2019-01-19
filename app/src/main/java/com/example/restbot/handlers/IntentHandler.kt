@@ -36,21 +36,21 @@ object IntentHandler {
     /** METHODS FOR EACH COMPLEX DIALOGFLOW INTENT */
     // TODO: Change that to Dialogflow fulfillment
     fun showChooseFood(intentParameters : HashMap<String, JsonElement>) {
-        activity.sendMessage("MENÚ DE COMIDA: \n" + MenuHandler.formatMenu(EntityName.FOOD), true)
+        activity.sendMessage("MENÚ DE COMIDA: \n" + LocalDatabaseHandler.formatMenu(EntityName.FOOD), true)
         activity.sendMessage("¿Qué te apetece de comer? \n", true, 2)
     }
 
     fun showChooseDrink(intentParameters : HashMap<String, JsonElement>) {
-        activity.sendMessage("CARTA DE BEBIDAS: \n" + MenuHandler.formatMenu(EntityName.DRINK), true)
+        activity.sendMessage("CARTA DE BEBIDAS: \n" + LocalDatabaseHandler.formatMenu(EntityName.DRINK), true)
         activity.sendMessage("¿Qué te apetece de beber? \n", true, 2)
     }
 
     fun wantDessertQuestion(intentParameters : HashMap<String, JsonElement>) {
-        activity.sendMessage("CARTA DE POSTRES: \n" + MenuHandler.formatMenu(EntityName.DESSERT), true, 1)
+        activity.sendMessage("CARTA DE POSTRES: \n" + LocalDatabaseHandler.formatMenu(EntityName.DESSERT), true, 1)
     }
 
     fun checkOrder(intentParameters : HashMap<String, JsonElement>) {
-        val currentOrderFormatted : String = "PEDIDO ACTUAL: \n" + MenuHandler.SEPARATOR.repeat(27) + "\n" +
+        val currentOrderFormatted : String = "PEDIDO ACTUAL: \n" + LocalDatabaseHandler.SEPARATOR.repeat(27) + "\n" +
                 currentOrder.joinToString(separator = "\n\t ► ", prefix = "\t ► ")
         activity.sendMessage(currentOrderFormatted, true)
         activity.sendMessage("¿Está todo correcto? \n", true, 2)

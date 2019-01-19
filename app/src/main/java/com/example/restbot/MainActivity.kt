@@ -18,7 +18,7 @@ import com.google.gson.JsonElement
 import android.widget.*
 import com.example.restbot.asynctasks.AIRequestTask
 import com.example.restbot.handlers.IntentHandler
-import com.example.restbot.handlers.MenuHandler
+import com.example.restbot.handlers.LocalDatabaseHandler
 import com.example.restbot.handlers.SpeakerHandler
 import kotlin.collections.HashMap
 
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(), AIListener {
 
         checkPermissions()
         configureAssistant()
-        MenuHandler // This executes init in object
+        LocalDatabaseHandler // This executes init in object
     }
 
     /**
