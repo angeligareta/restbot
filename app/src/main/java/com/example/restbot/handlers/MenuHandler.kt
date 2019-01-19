@@ -1,6 +1,10 @@
-package com.example.restbot
+package com.example.restbot.handlers
 
 import android.util.Log
+import com.example.restbot.asynctasks.EntityManagementTask
+import com.example.restbot.asynctasks.EntityName
+import com.example.restbot.asynctasks.EntityQuery
+import com.example.restbot.asynctasks.EntityQueryType
 import org.json.JSONArray
 import java.lang.Exception
 
@@ -8,10 +12,10 @@ import java.lang.Exception
  * Object that download the entries from the Dialogflow database and assign the values of the
  * different menus to a local database.
  */
-object MenuManagement {
+object MenuHandler {
 
     const val SEPARATOR = "-"
-    private var TAG = "MenuManagement"
+    private var TAG = "MenuHandler"
 
     // TODO: Change it to a Local DataBase
     private var foodMenu = LinkedHashMap<String, ArrayList<String>>()

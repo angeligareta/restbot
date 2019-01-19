@@ -1,4 +1,4 @@
-package com.example.restbot
+package com.example.restbot.asynctasks
 
 import ai.api.AIServiceContext
 import ai.api.android.AIDataService
@@ -6,6 +6,7 @@ import ai.api.model.AIRequest
 import ai.api.model.AIResponse
 import android.app.Activity
 import android.os.AsyncTask
+import com.example.restbot.MainActivity
 
 /**
  * Class designed to handle the communication with the chatbot in an asynchronous way.

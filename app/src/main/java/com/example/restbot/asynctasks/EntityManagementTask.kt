@@ -1,7 +1,8 @@
-package com.example.restbot
+package com.example.restbot.asynctasks
 
 import android.os.AsyncTask
 import android.util.Log
+import com.example.restbot.handlers.MenuHandler
 import com.google.gson.JsonParser
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -129,13 +130,13 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<EntityManage
     }
 
     /**
-     * When the execution is finished, this method uses the MenuManagement object
+     * When the execution is finished, this method uses the MenuHandler object
      * to fill the menus if the petitions were of get type.
      */
     override fun onPostExecute(entityManagementTaskResults: ArrayList<EntityManagementTaskResult>?) {
         entityManagementTaskResults?.forEach {
             if (it.entityQuery.entityQueryType.isGetRequest) {
-                MenuManagement.fillMenu(it.entityQuery.entityName, it.jsonRaw)
+                MenuHandler.fillMenu(it.entityQuery.entityName, it.jsonRaw)
             }
         }
     }

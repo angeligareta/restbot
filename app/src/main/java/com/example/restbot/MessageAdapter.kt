@@ -9,6 +9,11 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 
 /**
+ * Class that hold the needed info to render a single message.
+ */
+class Message(val text : String, val incomingMessage: Boolean)
+
+/**
  * Class that extends from MesageAdapter in order to display messages in ListView
  */
 class MessageAdapter(private var context: Context) : BaseAdapter() {

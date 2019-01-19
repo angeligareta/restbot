@@ -16,6 +16,10 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.google.gson.JsonElement
 import android.widget.*
+import com.example.restbot.asynctasks.AIRequestTask
+import com.example.restbot.handlers.IntentHandler
+import com.example.restbot.handlers.MenuHandler
+import com.example.restbot.handlers.SpeakerHandler
 import kotlin.collections.HashMap
 
 
@@ -46,7 +50,7 @@ class MainActivity : AppCompatActivity(), AIListener {
         mMessagesView = findViewById(R.id.messages_view)
 
         // Initialize the speaker that will speak the query results
-        Speaker.setContext(this)
+        SpeakerHandler.setContext(this)
 
         // Assign the message view adapter to an instance of the MessageAdapter class
         messageAdapter = MessageAdapter(this)
@@ -54,7 +58,7 @@ class MainActivity : AppCompatActivity(), AIListener {
 
         checkPermissions()
         configureAssistant()
-        MenuManagement // This executes init in object
+        MenuHandler // This executes init in object
     }
 
     /**
@@ -130,7 +134,7 @@ class MainActivity : AppCompatActivity(), AIListener {
         if (query != null && queryResponse != null) {
             sendMessage(query, false)
             sendMessage(queryResponse, true)
-            Speaker.play(queryResponse)
+            SpeakerHandler.play(queryResponse)
         }
 
         handleIntent(result)
