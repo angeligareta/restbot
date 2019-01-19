@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity(), AIListener {
 
         checkPermissions()
         configureAssistant()
+        MenuManagement // This executes init in object
     }
 
     /**
@@ -114,17 +115,6 @@ class MainActivity : AppCompatActivity(), AIListener {
             aiRequest.setQuery(query)
             AIRequestTask(this, aiDataService, customAIServiceContext).execute(aiRequest)
         }
-
-        EntityManagementTask().execute(EntityQuery(EntityQueryType.GET_ENTRIES_OF_SUBENTITY, "food", "meat"))
-        EntityManagementTask().execute(EntityQuery(EntityQueryType.GET_ENTRIES_OF_ENTITY, "food", null))
-
-//        var array =  JSONArray()
-//        array.put("kefir2")
-//
-//        var data = JSONObject()
-//        data.accumulate("value", "kefir")
-//        data.accumulate("synonyms", array)
-//        EntityManagementTask().execute(EntityQuery(EntityQueryType.SET_ENTRIES, "meat", data))
     }
 
     /**
@@ -172,13 +162,13 @@ class MainActivity : AppCompatActivity(), AIListener {
     /**
      * Method that add a new message to the message adapter and hence to the message list view.
      */
-    fun sendMessage(text: String, incomingMessage: Boolean) {
+    fun sendMessage(text: String, incomingMessage: Boolean, numberOfMessagesBefore: Int = 0) {
         val message = Message(text, incomingMessage)
 
         // Add message and scroll the ListView to the last added element
         runOnUiThread {
             messageAdapter.addMessage(message)
-            mMessagesView.setSelection(mMessagesView.count - 1)
+            mMessagesView.setSelection(mMessagesView.count - 1 - numberOfMessagesBefore)
         }
     }
 

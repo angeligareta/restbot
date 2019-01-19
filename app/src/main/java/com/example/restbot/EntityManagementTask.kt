@@ -17,28 +17,42 @@ const val TAG = "EntityManagementTask"
 /**
  * Enumeration that represent the different types of Entity Queries, such as GET_ENTRIES.
  */
-enum class EntityQueryType {
-    GET_ENTRIES_OF_ENTITY(),
-    GET_ENTRIES_OF_SUBENTITY()
+enum class EntityQueryType(var isGetRequest: Boolean) {
+    GET_ENTRIES_OF_ENTITY(true),
+    GET_ENTRIES_OF_SUBENTITY(true)
     //SET_ENTRIES()
+}
+
+/**
+ * Enumeration that represent the possible names of an entity.
+ */
+enum class EntityName(val entityName : String) {
+    FOOD("food"),
+    DRINK("drink"),
+    DESSERT("dessert")
 }
 
 /**
  * Class that represent the type of an Entity Query, and the name and values of the sub-entity is being queried.
  */
-class EntityQuery(val entityQueryType: EntityQueryType, val entityName: String, val subEntityName: String?)
+class EntityQuery(val entityQueryType: EntityQueryType, val entityName: EntityName, val subEntityName: String?)
+
+/**
+ * Data Structure for the result of an entity management task.
+ */
+class EntityManagementTaskResult(val entityQuery: EntityQuery, var jsonRaw: String?)
 
 /**
  * AsyncTask that executes entity queries, establishing a connection depending on the query and resolving the request.
  */
-class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<String?>>() {
+class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<EntityManagementTaskResult>>() {
 
-    override fun doInBackground(vararg entityQueries: EntityQuery?): ArrayList<String?> {
-        var queriesResponses = ArrayList<String?>(entityQueries.size)
+    override fun doInBackground(vararg entityQueries: EntityQuery?): ArrayList<EntityManagementTaskResult> {
+        var queriesResponses = ArrayList<EntityManagementTaskResult>(entityQueries.size)
 
         for (entityQuery in entityQueries) {
             if (entityQuery != null) {
-                var queryResponse: String? = null
+                var entityManagementTaskResult = EntityManagementTaskResult(entityQuery, null)
                 Log.d(TAG, "Requesting...")
 
                 if (entityQuery.entityQueryType == EntityQueryType.GET_ENTRIES_OF_SUBENTITY) {
@@ -66,7 +80,7 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<String?>>() 
 
                         var subEntityName = subEntity.getString("value")
                         if (subEntityName == entityQuery.subEntityName) {
-                            queryResponse = subEntity.getString("synonyms")
+                            entityManagementTaskResult.jsonRaw = subEntity.getString("synonyms")
                         }
                     }
                 }
@@ -90,23 +104,24 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<String?>>() 
                     // For that entity, only take the entries
                     val jsonObject = JSONObject(JsonParser().parse(jsonObjectString).toString())
                     val subEntitiesJsonArray = jsonObject.getJSONArray("entries")
-                    queryResponse = subEntitiesJsonArray.toString()
+                    entityManagementTaskResult.jsonRaw = subEntitiesJsonArray.toString()
                 }
-//                else if (entityQuery.entityType == EntityQueryType.SET_ENTRIES) {
-//                    val connection = getPostConnection()
-//
-//                    val writer = OutputStreamWriter(connection.outputStream)
-//                    writer.write("[ " + entityQuery.subEntityValues.toString() + " ]")
-//                    writer.flush()
-//                    writer.close()
-//
-//                    //TODO -> USE EntityManagementTask().execute(EntityQuery(EntityQueryType.GET_ENTRIES, "meat", null))
-//
-//                    connection.connect()
-//                    queryResponse = connection.responseMessage
-//                }
-                Log.d(TAG, "RESPONSE -> $queryResponse")
-                queriesResponses.add(queryResponse)
+                /*else if (entityQuery.entityType == EntityQueryType.SET_ENTRIES) {
+                    val connection = getPostConnection()
+
+                    val writer = OutputStreamWriter(connection.outputStream)
+                    writer.write("[ " + entityQuery.subEntityValues.toString() + " ]")
+                    writer.flush()
+                    writer.close()
+
+                    //TODO -> USE EntityManagementTask().execute(EntityQuery(EntityQueryType.GET_ENTRIES, "meat", null))
+
+                    connection.connect()
+                    queryResponse = connection.responseMessage
+                }*/
+
+                Log.d(TAG, "RESPONSE -> ${entityManagementTaskResult.jsonRaw}")
+                queriesResponses.add(entityManagementTaskResult)
             }
         }
 
@@ -114,11 +129,23 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<String?>>() 
     }
 
     /**
+     * When the execution is finished, this method uses the MenuManagement object
+     * to fill the menus if the petitions were of get type.
+     */
+    override fun onPostExecute(entityManagementTaskResults: ArrayList<EntityManagementTaskResult>?) {
+        entityManagementTaskResults?.forEach {
+            if (it.entityQuery.entityQueryType.isGetRequest) {
+                MenuManagement.fillMenu(it.entityQuery.entityName, it.jsonRaw)
+            }
+        }
+    }
+
+    /**
      * Function that returns a connection for getting entries of an entity.
      */
-    private fun getGetConnection(entityName: String): HttpURLConnection {
+    private fun getGetConnection(entityName: EntityName): HttpURLConnection {
         // TODO : Language can be changed
-        var connection = URL("https://api.api.ai/v1/entities/$entityName").
+        var connection = URL("https://api.api.ai/v1/entities/${entityName.entityName}").
                 openConnection() as HttpURLConnection
 
         connection.readTimeout = 15000
