@@ -2,6 +2,8 @@ package com.example.restbot.asynctasks
 
 import android.os.AsyncTask
 import android.util.Log
+import com.example.restbot.MainActivity
+import com.example.restbot.handlers.KeyHandler
 import com.example.restbot.handlers.LocalDatabaseHandler
 import com.google.gson.JsonParser
 import org.json.JSONObject
@@ -11,9 +13,6 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
-
-// TODO: Save it in a secure place
-const val DEVELOPER_ACCESS_TOKEN = "d9967b2ad29e49a490c9d46153443350"
 const val TAG = "EntityManagementTask"
 
 /**
@@ -152,7 +151,7 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<EntityManage
         connection.connectTimeout = 15000
         connection.setRequestProperty("Content-Type", "application/json")
         connection.requestMethod = "GET"
-        connection.setRequestProperty("Authorization", "Bearer $DEVELOPER_ACCESS_TOKEN")
+        connection.setRequestProperty("Authorization", "Bearer ${KeyHandler.DEVELOPER_ACCESS_TOKEN}")
         connection.doInput = true
 
         return connection
@@ -169,7 +168,7 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<EntityManage
         connection.connectTimeout = 15000
         connection.setRequestProperty("Content-Type", "application/json ; charset=utf-16")
         connection.requestMethod = "PUT"
-        connection.setRequestProperty("Authorization", "Bearer $DEVELOPER_ACCESS_TOKEN")
+        connection.setRequestProperty("Authorization", "Bearer ${KeyHandler.DEVELOPER_ACCESS_TOKEN}")
         connection.doOutput = true
 
         return connection

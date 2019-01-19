@@ -17,17 +17,13 @@ import android.util.Log
 import com.google.gson.JsonElement
 import android.widget.*
 import com.example.restbot.asynctasks.AIRequestTask
-import com.example.restbot.handlers.IntentHandler
-import com.example.restbot.handlers.LocalDatabaseHandler
-import com.example.restbot.handlers.RemoteDatabaseHandler
-import com.example.restbot.handlers.SpeakerHandler
+import com.example.restbot.handlers.*
 import kotlin.collections.HashMap
 
 
 class MainActivity : AppCompatActivity(), AIListener {
 
     private val TAG = "MainActivity"
-    private val ACCESS_TOKEN = "273d269822e041f7875ca797bf3b9217"
     private val REQUEST = 200
 
     private lateinit var messageAdapter: MessageAdapter
@@ -57,10 +53,13 @@ class MainActivity : AppCompatActivity(), AIListener {
         messageAdapter = MessageAdapter(this)
         mMessagesView.adapter = messageAdapter
 
-        checkPermissions()
-        configureAssistant()
+        // Execute handlers
+        KeyHandler.setContext(this)
         RemoteDatabaseHandler
         LocalDatabaseHandler // This executes init in object
+
+        checkPermissions()
+        configureAssistant()
     }
 
     /**
@@ -92,7 +91,7 @@ class MainActivity : AppCompatActivity(), AIListener {
         Log.d("MainActivity", "Configuring...")
 
         // Create an instance of AIConfiguration, specifying the access token, locale, and recognition engine.
-        val config = ai.api.android.AIConfiguration(ACCESS_TOKEN,
+        val config = ai.api.android.AIConfiguration(KeyHandler.ACCESS_TOKEN,
                 AIConfiguration.SupportedLanguages.Spanish,
                 ai.api.android.AIConfiguration.RecognitionEngine.System)
 
