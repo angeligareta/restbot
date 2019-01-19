@@ -12,14 +12,16 @@ object IntentHandler {
 
     private val TAG = "IntentHandler"
     private var dailyMenu : ArrayList<String> = ArrayList()
+    private lateinit var activity : MainActivity
 
     /**
      * Method that handle the intent received by parameter.
      * It works by looking for a method in IntentHandler that has the name of the intent.
      * If it exists, it would be called with the intentParameters.
      */
-    fun handleIntent(intentName: String?, intentParameters: HashMap<String, JsonElement>){
+    fun handleIntent(activity: MainActivity, intentName: String?, intentParameters: HashMap<String, JsonElement>){
         try {
+            this.activity = activity
             val method = this.javaClass.getMethod(intentName, intentParameters.javaClass)
             method.invoke(this, intentParameters)
         }
@@ -30,7 +32,7 @@ object IntentHandler {
     }
 
     fun welcome(intentParameters : HashMap<String, JsonElement>) {
-
+        this.activity.sendMessage("El menu de comida es: ", true)
     }
 
     /** METHODS FOR EACH COMPLEX DIALOGFLOW INTENT */

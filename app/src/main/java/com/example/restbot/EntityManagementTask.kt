@@ -6,7 +6,6 @@ import com.google.gson.JsonParser
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -18,15 +17,16 @@ const val TAG = "EntityManagementTask"
 /**
  * Enumeration that represent the different types of Entity Queries, such as GET_ENTRIES.
  */
-enum class EntityQueryType(val entityType: String) {
-    GET_ENTRIES("getEntries"),
-    SET_ENTRIES("setEntries")
+enum class EntityQueryType {
+    GET_ENTRIES_OF_ENTITY(),
+    GET_ENTRIES_OF_SUBENTITY()
+    //SET_ENTRIES()
 }
 
 /**
  * Class that represent the type of an Entity Query, and the name and values of the sub-entity is being queried.
  */
-class EntityQuery(val entityType: EntityQueryType, val subEntityName: String, val subEntityValues: JSONObject?)
+class EntityQuery(val entityQueryType: EntityQueryType, val entityName: String, val subEntityName: String?)
 
 /**
  * AsyncTask that executes entity queries, establishing a connection depending on the query and resolving the request.
@@ -41,10 +41,12 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<String?>>() 
                 var queryResponse: String? = null
                 Log.d(TAG, "Requesting...")
 
-                if (entityQuery.entityType == EntityQueryType.GET_ENTRIES) {
-                    val connection = getGetConnection()
+                if (entityQuery.entityQueryType == EntityQueryType.GET_ENTRIES_OF_SUBENTITY) {
+                    // Establish get connection with the entity name
+                    val connection = getGetConnection(entityQuery.entityName)
                     connection.connect()
 
+                    // Get full JSON of the Entity
                     val responseReader = BufferedReader(InputStreamReader(connection.inputStream))
                     var jsonObjectLine = responseReader.readLine()
 
@@ -56,6 +58,7 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<String?>>() 
                         }
                     }
 
+                    // For that entity, only take the dishes of a sub-entity
                     val jsonObject = JSONObject(JsonParser().parse(jsonObjectString).toString())
                     val subEntitiesJsonArray = jsonObject.getJSONArray("entries")
                     for (i in 0 until subEntitiesJsonArray.length()) {
@@ -66,19 +69,42 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<String?>>() 
                             queryResponse = subEntity.getString("synonyms")
                         }
                     }
-                } else if (entityQuery.entityType == EntityQueryType.SET_ENTRIES) {
-                    val connection = getPostConnection()
-
-                    val writer = OutputStreamWriter(connection.outputStream)
-                    writer.write("[ " + entityQuery.subEntityValues.toString() + " ]")
-                    writer.flush()
-                    writer.close()
-
-                    //TODO -> USE EntityManagementTask().execute(EntityQuery(EntityQueryType.GET_ENTRIES, "meat", null))
-
-                    connection.connect()
-                    queryResponse = connection.responseMessage
                 }
+                else if (entityQuery.entityQueryType == EntityQueryType.GET_ENTRIES_OF_ENTITY) {
+                    // Establish get connection with the entity name
+                    val connection = getGetConnection(entityQuery.entityName)
+                    connection.connect()
+
+                    // Get full JSON of the Entity
+                    val responseReader = BufferedReader(InputStreamReader(connection.inputStream))
+                    var jsonObjectLine = responseReader.readLine()
+
+                    var jsonObjectString = "{ "
+                    while (jsonObjectLine != null) {
+                        jsonObjectLine = responseReader.readLine()
+                        if (jsonObjectLine != null) {
+                            jsonObjectString += jsonObjectLine
+                        }
+                    }
+
+                    // For that entity, only take the entries
+                    val jsonObject = JSONObject(JsonParser().parse(jsonObjectString).toString())
+                    val subEntitiesJsonArray = jsonObject.getJSONArray("entries")
+                    queryResponse = subEntitiesJsonArray.toString()
+                }
+//                else if (entityQuery.entityType == EntityQueryType.SET_ENTRIES) {
+//                    val connection = getPostConnection()
+//
+//                    val writer = OutputStreamWriter(connection.outputStream)
+//                    writer.write("[ " + entityQuery.subEntityValues.toString() + " ]")
+//                    writer.flush()
+//                    writer.close()
+//
+//                    //TODO -> USE EntityManagementTask().execute(EntityQuery(EntityQueryType.GET_ENTRIES, "meat", null))
+//
+//                    connection.connect()
+//                    queryResponse = connection.responseMessage
+//                }
                 Log.d(TAG, "RESPONSE -> $queryResponse")
                 queriesResponses.add(queryResponse)
             }
@@ -90,9 +116,9 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<String?>>() 
     /**
      * Function that returns a connection for getting entries of an entity.
      */
-    private fun getGetConnection(): HttpURLConnection {
+    private fun getGetConnection(entityName: String): HttpURLConnection {
         // TODO : Language can be changed
-        var connection = URL("https://api.api.ai/v1/entities/food").
+        var connection = URL("https://api.api.ai/v1/entities/$entityName").
                 openConnection() as HttpURLConnection
 
         connection.readTimeout = 15000

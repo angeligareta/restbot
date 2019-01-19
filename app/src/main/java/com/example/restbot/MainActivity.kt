@@ -16,8 +16,6 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.google.gson.JsonElement
 import android.widget.*
-import org.json.JSONArray
-import org.json.JSONObject
 import kotlin.collections.HashMap
 
 
@@ -117,15 +115,16 @@ class MainActivity : AppCompatActivity(), AIListener {
             AIRequestTask(this, aiDataService, customAIServiceContext).execute(aiRequest)
         }
 
-        EntityManagementTask().execute(EntityQuery(EntityQueryType.GET_ENTRIES, "meat", null))
+        EntityManagementTask().execute(EntityQuery(EntityQueryType.GET_ENTRIES_OF_SUBENTITY, "food", "meat"))
+        EntityManagementTask().execute(EntityQuery(EntityQueryType.GET_ENTRIES_OF_ENTITY, "food", null))
 
-        var array =  JSONArray()
-        array.put("kefir2")
-
-        var data = JSONObject()
-        data.accumulate("value", "kefir")
-        data.accumulate("synonyms", array)
-        EntityManagementTask().execute(EntityQuery(EntityQueryType.SET_ENTRIES, "meat", data))
+//        var array =  JSONArray()
+//        array.put("kefir2")
+//
+//        var data = JSONObject()
+//        data.accumulate("value", "kefir")
+//        data.accumulate("synonyms", array)
+//        EntityManagementTask().execute(EntityQuery(EntityQueryType.SET_ENTRIES, "meat", data))
     }
 
     /**
@@ -167,13 +166,13 @@ class MainActivity : AppCompatActivity(), AIListener {
         // Get the intent name and parameters and let IntentHandler handle it.
         val intentName = result?.metadata?.intentName
         val intentParameters = if (result != null) result.parameters else HashMap<String, JsonElement>()
-        IntentHandler.handleIntent(intentName, intentParameters)
+        IntentHandler.handleIntent(this, intentName, intentParameters)
     }
 
     /**
      * Method that add a new message to the message adapter and hence to the message list view.
      */
-    private fun sendMessage(text: String, incomingMessage: Boolean) {
+    fun sendMessage(text: String, incomingMessage: Boolean) {
         val message = Message(text, incomingMessage)
 
         // Add message and scroll the ListView to the last added element
