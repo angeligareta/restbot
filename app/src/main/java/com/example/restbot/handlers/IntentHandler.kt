@@ -134,7 +134,7 @@ object IntentHandler {
                 "%.2f".format(totalPrice) + "€\n"
 
             activity.sendMessage(currentOrderFormatted, true)
-            activity.sendMessage("¿Quieren que os la divida?", true, 3)
+            activity.sendMessage("¿Quieren que se la divida?", true, 3)
         }
         else {
             activity.sendMessage("¿La cuenta? Vamos a empezar por pedir... Escribe 'empezar'", true, 1)
