@@ -7,7 +7,6 @@ import com.example.restbot.asynctasks.EntityName
 import com.google.gson.JsonElement
 import java.util.HashMap
 import kotlin.collections.ArrayList
-import kotlin.collections.joinToString
 
 /**
  * Object that handles the complex dialog flow intents.
@@ -15,8 +14,13 @@ import kotlin.collections.joinToString
 object IntentHandler {
 
     private val TAG = "IntentHandler"
-    private var currentOrder: ArrayList<String> = ArrayList()
+    private var currentOrder: ArrayList<DishOrdered> = ArrayList()
     private lateinit var activity: MainActivity
+
+    /**
+     * Data structure that represent an ordered dish.
+     */
+    class DishOrdered(val name: String, val quantity: Int = 1, val price: Double)
 
     /**
      * Method that handle the intent received by parameter.
@@ -37,6 +41,7 @@ object IntentHandler {
     /** METHODS FOR EACH COMPLEX DIALOGFLOW INTENT */
     // TODO: Change that to Dialogflow fulfillment
     fun showChooseFood(intentParameters: HashMap<String, JsonElement>) {
+        resetOrder()
         activity.sendMessage("MENÚ DE COMIDA: \n" + LocalDatabaseHandler.formatMenu(EntityName.FOOD), true)
         activity.sendMessage("¿Qué te apetece de comer? \n", true, 2)
     }
@@ -50,9 +55,40 @@ object IntentHandler {
         activity.sendMessage("CARTA DE POSTRES: \n" + LocalDatabaseHandler.formatMenu(EntityName.DESSERT), true, 1)
     }
 
+    fun askForGeneric(entityName : EntityName, intentParameters: HashMap<String, JsonElement>) {
+        if (intentParameters.containsKey("quantity") && intentParameters.containsKey(entityName.entityName)) {
+            var dishOrderedQuantity = intentParameters["quantity"]!!.asInt // We made sure it contains it
+            var dishOrderedName = intentParameters[entityName.entityName]!!.asString!!.capitalize()
+            var realDish = LocalDatabaseHandler.getDish(dishOrderedName, entityName)
+
+            Log.d(TAG, "ASKED FOR $dishOrderedQuantity of $dishOrderedName -> " +
+                    "[ realName: ${realDish.name}, price: ${realDish.price}")
+
+            currentOrder.add(DishOrdered(realDish.name, dishOrderedQuantity, realDish.price))
+        }
+        else {
+            Log.d(TAG, "SOMETHING WENT WRONG ASKING FOR $entityName")
+        }
+    }
+
+    fun askForFood(intentParameters: HashMap<String, JsonElement>) {
+        askForGeneric(EntityName.FOOD, intentParameters)
+    }
+
+    fun askForDrinks(intentParameters: HashMap<String, JsonElement>) {
+        askForGeneric(EntityName.DRINK, intentParameters)
+    }
+
+    fun askForDessert(intentParameters: HashMap<String, JsonElement>) {
+        askForGeneric(EntityName.DESSERT, intentParameters)
+    }
+
     fun checkOrder(intentParameters: HashMap<String, JsonElement>) {
-        val currentOrderFormatted: String = "PEDIDO ACTUAL: \n" + LocalDatabaseHandler.SEPARATOR.repeat(27) + "\n" +
-                currentOrder.joinToString(separator = "\n\t ► ", prefix = "\t ► ")
+        var currentOrderFormatted = "PEDIDO ACTUAL: \n" + LocalDatabaseHandler.SEPARATOR.repeat(27) + "\n"
+        currentOrder.forEach { orderedDish ->
+            currentOrderFormatted += "\t ► " + orderedDish.quantity.toString() + " de " + orderedDish.name +
+                    " %.2f".format(orderedDish.price * orderedDish.quantity) + " €\n"
+        }
         activity.sendMessage(currentOrderFormatted, true)
         activity.sendMessage("¿Está todo correcto? \n", true, 2)
     }
@@ -61,34 +97,8 @@ object IntentHandler {
         checkOrder(intentParameters)
     }
 
-    fun askForFood(intentParameters: HashMap<String, JsonElement>) {
-        Log.d(TAG, "ASK FOR FOOD $intentParameters")
-        if (intentParameters.containsKey("quantity")) {
-            currentOrder.add(intentParameters["quantity"]?.asString?.capitalize()
-                    + " de "
-                    + intentParameters[EntityName.FOOD.entityName]?.asString?.capitalize()
-            )
-        }
-    }
-
-    fun askForDrinks(intentParameters: HashMap<String, JsonElement>) {
-        Log.d(TAG, "ASK FOR FOOD $intentParameters")
-        if (intentParameters.containsKey("quantity")) {
-            currentOrder.add(intentParameters["quantity"]?.asString?.capitalize()
-                    + " de "
-                    + intentParameters[EntityName.DRINK.entityName]?.asString?.capitalize()
-            )
-        }
-    }
-
-    fun askForDessert(intentParameters: HashMap<String, JsonElement>) {
-        Log.d(TAG, "ASK FOR FOOD $intentParameters")
-        if (intentParameters.containsKey("quantity")) {
-            currentOrder.add(intentParameters["quantity"]?.asString?.capitalize()
-                    + " de "
-                    + intentParameters[EntityName.DESSERT.entityName]?.asString?.capitalize()
-            )
-        }
+    fun resetOrder() {
+        currentOrder.clear()
     }
 
     fun getBill(intentParameters: HashMap<String, JsonElement>) {

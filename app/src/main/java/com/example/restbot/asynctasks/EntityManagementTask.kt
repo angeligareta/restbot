@@ -55,65 +55,69 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<EntityManage
                 var entityManagementTaskResult = EntityManagementTaskResult(entityQuery, null)
                 Log.d(TAG, "Requesting...")
 
-                if (entityQuery.entityQueryType == EntityQueryType.GET_ENTRIES_OF_SUBENTITY) {
-                    // Establish get connection with the entity name
-                    val connection = getGetConnection(entityQuery.entityName)
-                    connection.connect()
+                when {
+                    entityQuery.entityQueryType == EntityQueryType.GET_ENTRIES_OF_SUBENTITY -> {
+                        // Establish get connection with the entity name
+                        val connection = getGetConnection(entityQuery.entityName)
+                        connection.connect()
 
-                    // Get full JSON of the Entity
-                    val responseReader = BufferedReader(InputStreamReader(connection.inputStream))
-                    var jsonObjectLine = responseReader.readLine()
+                        // Get full JSON of the Entity
+                        val responseReader = BufferedReader(InputStreamReader(connection.inputStream))
+                        var jsonObjectLine = responseReader.readLine()
 
-                    var jsonObjectString = "{ "
-                    while (jsonObjectLine != null) {
-                        jsonObjectLine = responseReader.readLine()
-                        if (jsonObjectLine != null) {
-                            jsonObjectString += jsonObjectLine
+                        var jsonObjectString = "{ "
+                        while (jsonObjectLine != null) {
+                            jsonObjectLine = responseReader.readLine()
+                            if (jsonObjectLine != null) {
+                                jsonObjectString += jsonObjectLine
+                            }
+                        }
+
+                        // For that entity, only take the dishes of a sub-entity
+                        val jsonObject = JSONObject(JsonParser().parse(jsonObjectString).toString())
+                        val subEntitiesJsonArray = jsonObject.getJSONArray("entries")
+                        for (i in 0 until subEntitiesJsonArray.length()) {
+                            var subEntity = subEntitiesJsonArray[i] as JSONObject
+
+                            var subEntityName = subEntity.getString("value")
+                            if (subEntityName == entityQuery.subEntityName) {
+                                entityManagementTaskResult.jsonRaw = subEntity.getString("synonyms")
+                            }
                         }
                     }
+                    entityQuery.entityQueryType == EntityQueryType.GET_ENTRIES_OF_ENTITY -> {
+                        // Establish get connection with the entity name
+                        val connection = getGetConnection(entityQuery.entityName)
+                        connection.connect()
 
-                    // For that entity, only take the dishes of a sub-entity
-                    val jsonObject = JSONObject(JsonParser().parse(jsonObjectString).toString())
-                    val subEntitiesJsonArray = jsonObject.getJSONArray("entries")
-                    for (i in 0 until subEntitiesJsonArray.length()) {
-                        var subEntity = subEntitiesJsonArray[i] as JSONObject
+                        // Get full JSON of the Entity
+                        val responseReader = BufferedReader(InputStreamReader(connection.inputStream))
+                        var jsonObjectLine = responseReader.readLine()
 
-                        var subEntityName = subEntity.getString("value")
-                        if (subEntityName == entityQuery.subEntityName) {
-                            entityManagementTaskResult.jsonRaw = subEntity.getString("synonyms")
+                        var jsonObjectString = "{ "
+                        while (jsonObjectLine != null) {
+                            jsonObjectLine = responseReader.readLine()
+                            if (jsonObjectLine != null) {
+                                jsonObjectString += jsonObjectLine
+                            }
                         }
+
+                        // For that entity, only take the entries
+                        val jsonObject = JSONObject(JsonParser().parse(jsonObjectString).toString())
+                        val subEntitiesJsonArray = jsonObject.getJSONArray("entries")
+                        entityManagementTaskResult.jsonRaw = subEntitiesJsonArray.toString()
                     }
-                } else if (entityQuery.entityQueryType == EntityQueryType.GET_ENTRIES_OF_ENTITY) {
-                    // Establish get connection with the entity name
-                    val connection = getGetConnection(entityQuery.entityName)
-                    connection.connect()
+                    entityQuery.entityQueryType == EntityQueryType.PUT_ENTRIES -> {
+                        val connection = getPostConnection()
 
-                    // Get full JSON of the Entity
-                    val responseReader = BufferedReader(InputStreamReader(connection.inputStream))
-                    var jsonObjectLine = responseReader.readLine()
+                        val writer = OutputStreamWriter(connection.outputStream, "utf-16")
+                        writer.write(entityQuery.entityJson)
+                        writer.flush()
+                        writer.close()
 
-                    var jsonObjectString = "{ "
-                    while (jsonObjectLine != null) {
-                        jsonObjectLine = responseReader.readLine()
-                        if (jsonObjectLine != null) {
-                            jsonObjectString += jsonObjectLine
-                        }
+                        connection.connect()
+                        entityManagementTaskResult.jsonRaw = connection.responseMessage
                     }
-
-                    // For that entity, only take the entries
-                    val jsonObject = JSONObject(JsonParser().parse(jsonObjectString).toString())
-                    val subEntitiesJsonArray = jsonObject.getJSONArray("entries")
-                    entityManagementTaskResult.jsonRaw = subEntitiesJsonArray.toString()
-                } else if (entityQuery.entityQueryType == EntityQueryType.PUT_ENTRIES) {
-                    val connection = getPostConnection()
-
-                    val writer = OutputStreamWriter(connection.outputStream, "utf-16")
-                    writer.write(entityQuery.entityJson)
-                    writer.flush()
-                    writer.close()
-
-                    connection.connect()
-                    entityManagementTaskResult.jsonRaw = connection.responseMessage
                 }
 
                 Log.d(TAG, "RESPONSE -> ${entityManagementTaskResult.jsonRaw}")

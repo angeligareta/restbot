@@ -32,16 +32,57 @@ object RemoteDatabaseHandler : ValueEventListener {
      */
     override fun onDataChange(dataSnapshot: DataSnapshot) {
         dataSnapshot.child("entities").children.forEach { entity ->
-            val jsonObject = getRawJSONFromChildren(entity.children)
-            var entityName = jsonObject["name"].toString()
-            var entityJSON = jsonObject.toString()
+            val jsonObjectRaw = getRawJSONFromChildren(entity.children)
+            val jsonObjectWithAttributes = getRawJSONFromChildrenWithAttributes(entity.children)
+            var entityName = EntityName.valueOf(jsonObjectRaw["name"].toString().toUpperCase())
 
-            // Uploading firebase database to dialogflow database
-            EntityManagementTask().execute(EntityQuery(EntityQueryType.PUT_ENTRIES,
-                    EntityName.valueOf(entityName.toUpperCase()), null, entityJSON))
+            Log.d(TAG, "UPLOADING ENTITY $entityName -> $jsonObjectWithAttributes")
 
-            Log.d(TAG, "Updated entity $entityName")
+            // Updating local database with firebase one
+            LocalDatabaseHandler.fillMenu(entityName, jsonObjectWithAttributes.toString())
+
+            // Updating dialogflow database with firebase one
+            EntityManagementTask().execute(
+                    EntityQuery(EntityQueryType.PUT_ENTRIES, entityName, null, jsonObjectRaw.toString())
+            )
+
+            Log.d(TAG, "UPDATED ENTITY $entityName")
         }
+    }
+
+    /**
+     * Construct a json object from the different entities of the firebase database.
+     * This is with the aim of uploading the json to dialog flow by using put http requests.
+     */
+    private fun getRawJSONFromChildrenWithAttributes(entities: Iterable<DataSnapshot>): JSONObject {
+        var jsonObject = JSONObject()
+        entities.forEach {
+            if (it.key != "entries") {
+                jsonObject.put(it.key, it.value.toString())
+            } else { // Entries case
+                var entriesJsonArray = JSONArray()
+                it.children.forEach { fakeEntry ->
+                    var entryJsonObject = JSONObject()
+                    fakeEntry.children.forEach { entry ->
+                        if (entry.key != "synonyms") {
+                            entryJsonObject.put(entry.key, entry.value.toString())
+                        } else {
+                            var subentriesJsonArray = JSONArray()
+                            entry.children.forEach { subEntry ->
+                                var dishJsonObject = JSONObject()
+                                dishJsonObject.put("name", subEntry.child("name").value)
+                                dishJsonObject.put("price", subEntry.child("price").value)
+                                subentriesJsonArray.put(dishJsonObject)
+                            }
+                            entryJsonObject.put(entry.key, subentriesJsonArray)
+                        }
+                    }
+                    entriesJsonArray.put(entryJsonObject)
+                }
+                jsonObject.put(it.key, entriesJsonArray)
+            }
+        }
+        return jsonObject
     }
 
     /**
@@ -63,7 +104,7 @@ object RemoteDatabaseHandler : ValueEventListener {
                         } else {
                             var subentriesJsonArray = JSONArray()
                             entry.children.forEach { subEntry ->
-                                subentriesJsonArray.put(subEntry.value)
+                                subentriesJsonArray.put(subEntry.child("name").value)
                             }
                             entryJsonObject.put(entry.key, subentriesJsonArray)
                         }

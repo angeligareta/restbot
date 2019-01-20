@@ -28,6 +28,7 @@ import com.google.gson.JsonElement
 class MainActivity : AppCompatActivity(), AIListener {
 
     private val TAG = "MainActivity"
+    private val WELCOME_MESSAGE = "empezar"
     private val REQUEST = 200
 
     private lateinit var messageAdapter: MessageAdapter
@@ -124,6 +125,10 @@ class MainActivity : AppCompatActivity(), AIListener {
             aiRequest.setQuery(query)
             AIRequestTask(this, aiDataService, customAIServiceContext).execute(aiRequest)
         }
+
+        // Send the welcome_message to start
+        aiRequest.setQuery(WELCOME_MESSAGE)
+        AIRequestTask(this, aiDataService, customAIServiceContext).execute(aiRequest)
     }
 
     /**
