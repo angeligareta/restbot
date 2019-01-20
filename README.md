@@ -25,7 +25,10 @@ The main features of the chatbot are:
   * Allow to pay by card or cash. (real payment not implemented)
 
 ## State Diagram of process
-![State Diagram of RestBot](uml/state_diagram.jpg)
+<kbd>
+  <img src="uml/state_diagram.jpg">
+</kbd>
+<!-- ![State Diagram of RestBot](uml/state_diagram.jpg) -->
 
 ## Bibliography
   - [Android SDK for Dialogflow](https://github.com/dialogflow/dialogflow-android-client)
