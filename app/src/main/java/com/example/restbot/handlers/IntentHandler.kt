@@ -15,6 +15,8 @@ object IntentHandler {
 
     private val TAG = "IntentHandler"
     private var currentOrder: ArrayList<DishOrdered> = ArrayList()
+    private var totalPrice: Double = 0.0
+    private val dailyRecommendation = "Medallón de salmón noruego con papas cocidas y salsa bearnesa"
     private lateinit var activity: MainActivity
 
     /**
@@ -43,7 +45,8 @@ object IntentHandler {
     fun showChooseFood(intentParameters: HashMap<String, JsonElement>) {
         resetOrder()
         activity.sendMessage("MENÚ DE COMIDA: \n" + LocalDatabaseHandler.formatMenu(EntityName.FOOD), true)
-        activity.sendMessage("¿Qué te apetece de comer? \n", true, 2)
+        activity.sendMessage("La recomendación del día es: $dailyRecommendation.\n", true)
+        activity.sendMessage("¿Qué te apetece de comer? \n", true, 3)
     }
 
     fun showChooseDrink(intentParameters: HashMap<String, JsonElement>) {
@@ -64,10 +67,23 @@ object IntentHandler {
             Log.d(TAG, "ASKED FOR $dishOrderedQuantity of $dishOrderedName -> " +
                     "[ realName: ${realDish.name}, price: ${realDish.price}")
 
+            makeSuggestion(entityName, realDish)
+
             currentOrder.add(DishOrdered(realDish.name, dishOrderedQuantity, realDish.price))
         }
         else {
             Log.d(TAG, "SOMETHING WENT WRONG ASKING FOR $entityName")
+        }
+    }
+
+    private fun makeSuggestion(entityName: EntityName, realDish: LocalDatabaseHandler.Dish) {
+        if (entityName == EntityName.FOOD) {
+            if (realDish.category.toLowerCase() == "carne") {
+                activity.sendMessage("Con ésto creo que le iría muy bien un vino tinto. ¡Luego te lo enseño en la carta de bebidas!", true)
+            }
+            else if (realDish.category.toLowerCase() == "pescados") {
+                activity.sendMessage("Con ésto creo que le iría muy bien un vino blanco. ¡Luego te lo enseño en la carta de bebidas!", true)
+            }
         }
     }
 
@@ -86,8 +102,7 @@ object IntentHandler {
     fun checkOrder(intentParameters: HashMap<String, JsonElement>) {
         var currentOrderFormatted = "PEDIDO ACTUAL: \n" + LocalDatabaseHandler.SEPARATOR.repeat(27) + "\n"
         currentOrder.forEach { orderedDish ->
-            currentOrderFormatted += "\t ► " + orderedDish.quantity.toString() + " de " + orderedDish.name +
-                    " %.2f".format(orderedDish.price * orderedDish.quantity) + " €\n"
+            currentOrderFormatted += "\t ► " + orderedDish.quantity.toString() + " de " + orderedDish.name + ".\n"
         }
         activity.sendMessage(currentOrderFormatted, true)
         activity.sendMessage("¿Está todo correcto? \n", true, 2)
@@ -99,10 +114,34 @@ object IntentHandler {
 
     fun resetOrder() {
         currentOrder.clear()
+        totalPrice = 0.0
     }
 
-    fun getBill(intentParameters: HashMap<String, JsonElement>) {
-        Log.d(TAG, "GET BILL REACHED $intentParameters")
+    fun askForBill(intentParameters: HashMap<String, JsonElement>) {
+        if (currentOrder.size != 0) {
+            var currentOrderFormatted = "LA CUENTA ES: \n" + LocalDatabaseHandler.SEPARATOR.repeat(27) + "\n"
+            totalPrice = 0.0
+            currentOrder.forEach { orderedDish ->
+                currentOrderFormatted += "\t ► " + orderedDish.quantity.toString() + " de " + orderedDish.name +
+                        ". %.2f".format(orderedDish.price * orderedDish.quantity) + "€\n"
+                totalPrice += (orderedDish.price * orderedDish.quantity)
+            }
+            currentOrderFormatted += LocalDatabaseHandler.SEPARATOR.repeat(27) + "\n" + "PRECIO TOTAL: " +
+                "%.2f".format(totalPrice) + "€\n"
+
+            activity.sendMessage(currentOrderFormatted, true)
+            activity.sendMessage("¿Quieren que os la divida?", true, 3)
+        }
+        else {
+            activity.sendMessage("¿La cuenta? Vamos a empezar por pedir... Escribe 'empezar'", true, 1)
+        }
     }
+
+    fun adjustBill(intentParameters: HashMap<String, JsonElement>) {
+        var quantity = intentParameters["number"]!!.asInt
+        activity.sendMessage("Pues serían ${"%.2f".format(totalPrice.div(quantity))}€ por persona. ¿Cómo deseas pagar, tarjeta o efectivo?", true)
+    }
+
+
 
 }

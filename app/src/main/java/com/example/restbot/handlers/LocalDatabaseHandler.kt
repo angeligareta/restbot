@@ -18,7 +18,7 @@ object LocalDatabaseHandler {
     /**
      * Data structure that represent a dish.
      */
-    class Dish(val name: String, val price: Double)
+    class Dish(val name: String, val price: Double, val category: String)
 
     // TODO: Change it to a Local DataBase
     private var foodMenu = LinkedHashMap<String, ArrayList<Dish>>()
@@ -71,7 +71,7 @@ object LocalDatabaseHandler {
             var jsonArray = JSONObject(jsonRaw).getJSONArray("entries")
             for (i in 0 until jsonArray.length()) {
                 var jsonObject = jsonArray.getJSONObject(i)
-                var menuCategoryName = jsonObject.getString("value")
+                var menuCategoryName = jsonObject!!.getString("value")
                 var dishJsonArray = jsonObject.getJSONArray("synonyms")
 
                 var dishArray = ArrayList<Dish>()
@@ -80,7 +80,7 @@ object LocalDatabaseHandler {
                     var dishName = dish.getString("name")
                     var dishPrice = dish.getDouble("price")
 
-                    dishArray.add(Dish(dishName, dishPrice))
+                    dishArray.add(Dish(dishName, dishPrice, menuCategoryName))
                 }
                 menu.put(menuCategoryName, dishArray)
             }
@@ -118,7 +118,7 @@ object LocalDatabaseHandler {
                 }
             }
         }
-        return Dish("", 0.0)
+        return Dish("", 0.0, "")
     }
 
     private fun normalizeString(text: String) : String {
