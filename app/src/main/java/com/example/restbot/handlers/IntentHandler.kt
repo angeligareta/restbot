@@ -117,6 +117,10 @@ object IntentHandler {
         totalPrice = 0.0
     }
 
+    fun orderCorrect(intentParameters: HashMap<String, JsonElement>) {
+        RemoteDatabaseHandler.addNewOrder(currentOrder)
+    }
+
     fun askForBill(intentParameters: HashMap<String, JsonElement>) {
         if (currentOrder.size != 0) {
             var currentOrderFormatted = "LA CUENTA ES: \n" + LocalDatabaseHandler.SEPARATOR.repeat(27) + "\n"

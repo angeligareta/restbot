@@ -5,10 +5,7 @@ import com.example.restbot.asynctasks.EntityManagementTask
 import com.example.restbot.asynctasks.EntityName
 import com.example.restbot.asynctasks.EntityQuery
 import com.example.restbot.asynctasks.EntityQueryType
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -121,6 +118,11 @@ object RemoteDatabaseHandler : ValueEventListener {
      * Method of ValueEventListener not implemented.
      */
     override fun onCancelled(databaseError: DatabaseError) {
+    }
+
+    fun addNewOrder(currentOrder: ArrayList<IntentHandler.DishOrdered>) {
+        var newOrderRef = firebaseDBReference.child("orders").push()
+        newOrderRef.setValue(currentOrder)
     }
 
 }
