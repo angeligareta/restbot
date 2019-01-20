@@ -6,7 +6,6 @@ import com.example.restbot.asynctasks.EntityName
 import com.example.restbot.asynctasks.EntityQuery
 import com.example.restbot.asynctasks.EntityQueryType
 import org.json.JSONArray
-import java.lang.Exception
 
 /**
  * Object that download the entries from the Dialogflow database and assign the values of the

@@ -11,7 +11,7 @@ import android.widget.TextView
 /**
  * Class that hold the needed info to render a single message.
  */
-class Message(val text : String, val incomingMessage: Boolean)
+class Message(val text: String, val incomingMessage: Boolean)
 
 /**
  * Class that extends from MesageAdapter in order to display messages in ListView
@@ -41,7 +41,7 @@ class MessageAdapter(private var context: Context) : BaseAdapter() {
         // It will be rendered by creating a view object in memory.
         val convertViewModified = if (currentMessage.incomingMessage)
             messageInflater.inflate(R.layout.incoming_message, null)
-            else
+        else
             messageInflater.inflate(R.layout.outgoing_message, null)
 
         // Change the message body of the new inflated message.

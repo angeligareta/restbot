@@ -8,18 +8,15 @@ import com.example.restbot.MainActivity
  */
 object SpeakerHandler : TextToSpeech.OnInitListener {
 
-    private var textToSpeech : TextToSpeech? = null
+    private var textToSpeech: TextToSpeech? = null
 
     fun setContext(context: MainActivity) {
         textToSpeech = TextToSpeech(context, this)
     }
 
-
     fun play(textToSpeak: String?) {
         textToSpeech?.speak(textToSpeak, TextToSpeech.QUEUE_ADD, null, null)
     }
 
-    override fun onInit(status: Int) {
-
-    }
+    override fun onInit(status: Int) {}
 }

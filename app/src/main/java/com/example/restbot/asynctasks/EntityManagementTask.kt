@@ -2,7 +2,6 @@ package com.example.restbot.asynctasks
 
 import android.os.AsyncTask
 import android.util.Log
-import com.example.restbot.MainActivity
 import com.example.restbot.handlers.KeyHandler
 import com.example.restbot.handlers.LocalDatabaseHandler
 import com.google.gson.JsonParser
@@ -27,7 +26,7 @@ enum class EntityQueryType(var isGetRequest: Boolean) {
 /**
  * Enumeration that represent the possible names of an entity.
  */
-enum class EntityName(val entityName : String) {
+enum class EntityName(val entityName: String) {
     FOOD("food"),
     DRINK("drink"),
     DESSERT("dessert")
@@ -36,7 +35,7 @@ enum class EntityName(val entityName : String) {
 /**
  * Class that represent the type of an Entity Query, and the name and values of the sub-entity is being queried.
  */
-class EntityQuery(val entityQueryType: EntityQueryType, val entityName: EntityName, val subEntityName: String?, val entityJson : String? = null)
+class EntityQuery(val entityQueryType: EntityQueryType, val entityName: EntityName, val subEntityName: String?, val entityJson: String? = null)
 
 /**
  * Data Structure for the result of an entity management task.
@@ -84,8 +83,7 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<EntityManage
                             entityManagementTaskResult.jsonRaw = subEntity.getString("synonyms")
                         }
                     }
-                }
-                else if (entityQuery.entityQueryType == EntityQueryType.GET_ENTRIES_OF_ENTITY) {
+                } else if (entityQuery.entityQueryType == EntityQueryType.GET_ENTRIES_OF_ENTITY) {
                     // Establish get connection with the entity name
                     val connection = getGetConnection(entityQuery.entityName)
                     connection.connect()
@@ -106,8 +104,7 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<EntityManage
                     val jsonObject = JSONObject(JsonParser().parse(jsonObjectString).toString())
                     val subEntitiesJsonArray = jsonObject.getJSONArray("entries")
                     entityManagementTaskResult.jsonRaw = subEntitiesJsonArray.toString()
-                }
-                else if (entityQuery.entityQueryType == EntityQueryType.PUT_ENTRIES) {
+                } else if (entityQuery.entityQueryType == EntityQueryType.PUT_ENTRIES) {
                     val connection = getPostConnection()
 
                     val writer = OutputStreamWriter(connection.outputStream, "utf-16")
@@ -144,8 +141,7 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<EntityManage
      */
     private fun getGetConnection(entityName: EntityName): HttpURLConnection {
         // TODO : Language can be changed
-        var connection = URL("https://api.api.ai/v1/entities/${entityName.entityName}").
-                openConnection() as HttpURLConnection
+        var connection = URL("https://api.api.ai/v1/entities/${entityName.entityName}").openConnection() as HttpURLConnection
 
         connection.readTimeout = 15000
         connection.connectTimeout = 15000
@@ -160,9 +156,8 @@ class EntityManagementTask : AsyncTask<EntityQuery, Void, ArrayList<EntityManage
     /**
      * Function that returns a connection for setting entries of an entity.
      */
-    private fun getPostConnection() : HttpURLConnection {
-        var connection = URL("https://api.api.ai/v1/entities?v=20150910&lang=es").
-                openConnection() as HttpURLConnection
+    private fun getPostConnection(): HttpURLConnection {
+        var connection = URL("https://api.api.ai/v1/entities?v=20150910&lang=es").openConnection() as HttpURLConnection
 
         connection.readTimeout = 15000
         connection.connectTimeout = 15000

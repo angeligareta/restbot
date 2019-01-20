@@ -38,7 +38,7 @@ object RemoteDatabaseHandler : ValueEventListener {
 
             // Uploading firebase database to dialogflow database
             EntityManagementTask().execute(EntityQuery(EntityQueryType.PUT_ENTRIES,
-                        EntityName.valueOf(entityName.toUpperCase()), null, entityJSON))
+                    EntityName.valueOf(entityName.toUpperCase()), null, entityJSON))
 
             Log.d(TAG, "Updated entity $entityName")
         }
@@ -48,23 +48,21 @@ object RemoteDatabaseHandler : ValueEventListener {
      * Construct a json object from the different entities of the firebase database.
      * This is with the aim of uploading the json to dialog flow by using put http requests.
      */
-    private fun getRawJSONFromChildren(entities: Iterable<DataSnapshot>) : JSONObject {
+    private fun getRawJSONFromChildren(entities: Iterable<DataSnapshot>): JSONObject {
         var jsonObject = JSONObject()
         entities.forEach {
             if (it.key != "entries") {
                 jsonObject.put(it.key, it.value.toString())
-            }
-            else { // Entries case
+            } else { // Entries case
                 var entriesJsonArray = JSONArray()
                 it.children.forEach { fakeEntry ->
                     var entryJsonObject = JSONObject()
                     fakeEntry.children.forEach { entry ->
                         if (entry.key != "synonyms") {
                             entryJsonObject.put(entry.key, entry.value.toString())
-                        }
-                        else {
+                        } else {
                             var subentriesJsonArray = JSONArray()
-                            entry.children.forEach{ subEntry ->
+                            entry.children.forEach { subEntry ->
                                 subentriesJsonArray.put(subEntry.value)
                             }
                             entryJsonObject.put(entry.key, subentriesJsonArray)

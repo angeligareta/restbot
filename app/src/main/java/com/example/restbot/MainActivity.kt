@@ -1,24 +1,28 @@
 package com.example.restbot
 
 import ai.api.AIConfiguration
-import ai.api.android.AIDataService
 import ai.api.AIListener
 import ai.api.AIServiceContextBuilder
+import ai.api.android.AIDataService
 import ai.api.android.AIService
-import ai.api.model.*
+import ai.api.model.AIError
+import ai.api.model.AIRequest
+import ai.api.model.AIResponse
+import ai.api.model.Result
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import com.google.gson.JsonElement
-import android.widget.*
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ListView
 import com.example.restbot.asynctasks.AIRequestTask
 import com.example.restbot.handlers.*
-import kotlin.collections.HashMap
+import com.google.gson.JsonElement
 
 
 class MainActivity : AppCompatActivity(), AIListener {
@@ -179,7 +183,7 @@ class MainActivity : AppCompatActivity(), AIListener {
 
     /**
      * Method not implemented of interface AIListener
-      */
+     */
     override fun onError(error: AIError?) {
         Log.e(TAG, error.toString())
     }
