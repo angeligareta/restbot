@@ -4,6 +4,7 @@
 
 # Manually added
 credentials.json
+*.psd
 
 ### Android ###
 # Built application files

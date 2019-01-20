@@ -23,3 +23,13 @@ The main features of the chatbot are:
   * Calculate the bill and possibility of diving it between the people in the table.
   * Send the order once is finished to the firabase database, where a TPV could read it from.
   * Allow to pay by card or cash. (real payment not implemented)
+
+## State Diagram of process
+![State Diagram of RestBot](uml/state_diagram.jpg)
+
+## Bibliography
+  - [Android SDK for Dialogflow](https://github.com/dialogflow/dialogflow-android-client)
+  - [Android chatbot with Dialogflow](https://medium.com/@abhi007tyagi/android-chatbot-with-dialogflow-8c0dcc8d8018)
+  - [Entities management in Dialogflow](https://dialogflow.com/docs/reference/agent/entities#put_entities_sample)
+  - [Read and Write - Firebase](https://firebase.google.com/docs/database/android/read-and-write)
+  - [Saving Data - Firebase](https://firebase.google.com/docs/database/admin/save-data)
