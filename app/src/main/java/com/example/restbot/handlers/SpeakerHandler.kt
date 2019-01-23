@@ -18,5 +18,9 @@ object SpeakerHandler : TextToSpeech.OnInitListener {
         textToSpeech?.speak(textToSpeak, TextToSpeech.QUEUE_ADD, null, null)
     }
 
+    fun stop() {
+        textToSpeech?.stop()
+    }
+
     override fun onInit(status: Int) {}
 }

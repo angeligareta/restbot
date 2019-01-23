@@ -23,12 +23,13 @@ import android.widget.ListView
 import com.example.restbot.asynctasks.AIRequestTask
 import com.example.restbot.handlers.*
 import com.google.gson.JsonElement
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity(), AIListener {
 
     private val TAG = "MainActivity"
-    private val WELCOME_MESSAGE = "empezar"
+    private val WELCOME_MESSAGE = "Comienze con 'hola'"
     private val REQUEST = 200
 
     private lateinit var messageAdapter: MessageAdapter
@@ -37,6 +38,8 @@ class MainActivity : AppCompatActivity(), AIListener {
     private lateinit var mInputText: EditText
     private lateinit var mListenButton: ImageButton
     private lateinit var mSendButton: ImageButton
+
+    private var voiceMode:  Boolean = false
 
     /**
      * Initialization of the UI components, speaker and messageAdapter.
@@ -108,7 +111,10 @@ class MainActivity : AppCompatActivity(), AIListener {
         aiService.setListener(this)
 
         // Set the button as listener
-        mListenButton.setOnClickListener { aiService.startListening() }
+        mListenButton.setOnClickListener {
+            SpeakerHandler.stop()
+            aiService.startListening()
+        }
 
         /** Configuration of DialogFlow by using text requests. */
         val aiDataService = AIDataService(this, config)
@@ -120,6 +126,10 @@ class MainActivity : AppCompatActivity(), AIListener {
         mSendButton.setOnClickListener {
             val query = mInputText.text.toString()
             mInputText.text.clear()
+            if (voiceMode) {
+                voiceMode = false
+            }
+
             sendMessage(query, false)
 
             aiRequest.setQuery(query)
@@ -127,8 +137,9 @@ class MainActivity : AppCompatActivity(), AIListener {
         }
 
         // Send the welcome_message to start
-        aiRequest.setQuery(WELCOME_MESSAGE)
-        AIRequestTask(this, aiDataService, customAIServiceContext).execute(aiRequest)
+        mInputText.hint = WELCOME_MESSAGE
+        //aiRequest.setQuery(WELCOME_MESSAGE)
+        // AIRequestTask(this, aiDataService, customAIServiceContext).execute(aiRequest)
     }
 
     /**
@@ -142,9 +153,12 @@ class MainActivity : AppCompatActivity(), AIListener {
         val queryResponse = result?.fulfillment?.speech
 
         if (query != null && queryResponse != null) {
+            if (!voiceMode) {
+                voiceMode = true
+            }
+
             sendMessage(query, false)
             sendMessage(queryResponse, true)
-            SpeakerHandler.play(queryResponse)
         }
 
         handleIntent(result)
@@ -179,11 +193,24 @@ class MainActivity : AppCompatActivity(), AIListener {
     fun sendMessage(text: String, incomingMessage: Boolean, numberOfMessagesBefore: Int = 0) {
         val message = Message(text, incomingMessage)
 
+        if (input_text.hint == WELCOME_MESSAGE) {
+            mInputText.hint = resources.getString(R.string.input_message_hint)
+        }
+
+        if (voiceMode && incomingMessage) {
+            SpeakerHandler.play(text)
+        }
+
         // Add message and scroll the ListView to the last added element
         runOnUiThread {
             messageAdapter.addMessage(message)
             mMessagesView.setSelection(mMessagesView.count - 1 - numberOfMessagesBefore)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        SpeakerHandler.stop()
     }
 
     /**

@@ -12,7 +12,6 @@ import java.text.Normalizer
  */
 object LocalDatabaseHandler {
 
-    const val SEPARATOR = "-"
     private var TAG = "LocalDatabaseHandler"
 
     /**
@@ -95,11 +94,9 @@ object LocalDatabaseHandler {
     private fun formatSpecificMenu(menu: LinkedHashMap<String, ArrayList<Dish>>): String {
         var formattedMenu = ""
         menu.forEach { dishCategory ->
-            val dishCategorySeparator = "\n" + SEPARATOR.repeat(dishCategory.key.length * 2) + "\n"
-
-            formattedMenu += dishCategorySeparator + dishCategory.key + dishCategorySeparator
+            formattedMenu +=  "\n◆ " + dishCategory.key + "\n"
             dishCategory.value.forEach { dish ->
-                formattedMenu += "\t ► ${dish.name.capitalize()}. " +  "%.2f".format(dish.price) + " € \n"
+                formattedMenu += "\t ► ${dish.name.capitalize()}. " +  "%.2f".format(dish.price) + "€ \n"
             }
         }
         return formattedMenu

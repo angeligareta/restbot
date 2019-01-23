@@ -100,7 +100,7 @@ object IntentHandler {
     }
 
     fun checkOrder(intentParameters: HashMap<String, JsonElement>) {
-        var currentOrderFormatted = "PEDIDO ACTUAL: \n" + LocalDatabaseHandler.SEPARATOR.repeat(27) + "\n"
+        var currentOrderFormatted = "◆ PEDIDO ACTUAL: \n"
         currentOrder.forEach { orderedDish ->
             currentOrderFormatted += "\t ► " + orderedDish.quantity.toString() + " de " + orderedDish.name + ".\n"
         }
@@ -123,15 +123,14 @@ object IntentHandler {
 
     fun askForBill(intentParameters: HashMap<String, JsonElement>) {
         if (currentOrder.size != 0) {
-            var currentOrderFormatted = "LA CUENTA ES: \n" + LocalDatabaseHandler.SEPARATOR.repeat(27) + "\n"
+            var currentOrderFormatted = "LA CUENTA ES: \n"
             totalPrice = 0.0
             currentOrder.forEach { orderedDish ->
                 currentOrderFormatted += "\t ► " + orderedDish.quantity.toString() + " de " + orderedDish.name +
                         ". %.2f".format(orderedDish.price * orderedDish.quantity) + "€\n"
                 totalPrice += (orderedDish.price * orderedDish.quantity)
             }
-            currentOrderFormatted += LocalDatabaseHandler.SEPARATOR.repeat(27) + "\n" + "PRECIO TOTAL: " +
-                "%.2f".format(totalPrice) + "€\n"
+            currentOrderFormatted += "◆ PRECIO TOTAL: " + "%.2f".format(totalPrice) + "€\n"
 
             activity.sendMessage(currentOrderFormatted, true)
             activity.sendMessage("¿Quieren que se la divida?", true, 3)
