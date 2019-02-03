@@ -24,11 +24,21 @@ The main features of the chatbot are:
   * Send the order once is finished to the firabase database, where a TPV could read it from.
   * Allow to pay by card or cash. (real payment not implemented)
 
-## State Diagram of process
+## Process
+### App layout
 <kbd>
-  <img src="uml/state_diagram.jpg">
+  <img width="300" height="600" src="res/android-layout-components.png">
+</kbd>
+### State Diagram and Dialogflow intents
+<kbd>
+  <img src="res/state_diagram.jpg">
 </kbd>
 <!-- ![State Diagram of RestBot](uml/state_diagram.jpg) -->
+
+### Dialogflow entities
+<kbd>
+  <img src="res/entities-dialogflow.png">
+</kbd>
 
 ## Bibliography
   - [Android SDK for Dialogflow](https://github.com/dialogflow/dialogflow-android-client)
