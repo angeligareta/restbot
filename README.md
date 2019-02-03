@@ -29,6 +29,7 @@ The main features of the chatbot are:
 <kbd>
   <img width="300" height="600" src="res/android-layout-components.png">
 </kbd>
+
 ### State Diagram and Dialogflow intents
 <kbd>
   <img src="res/state_diagram.jpg">
