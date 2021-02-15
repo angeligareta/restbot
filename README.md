@@ -1,4 +1,10 @@
-# RestBot - A Bot designed for Restaurants
+<h1 align="center">RestBot - A Bot designed for Restaurants</h1>
+<h4 align="center">Final project of the Intelligent Systems course at <a href="https://www.ull.es/">ULL</a></h4>
+
+<p align="center">
+  <img alt="ULL" src="https://img.shields.io/badge/University-La%20Laguna-%2354048c?style=flat-square" />  
+  <img alt="License" src="https://img.shields.io/github/license/angeligareta/restbot?style=flat-square" />
+</p>
 
 ## Abstract
 Implementation of a Chatbot in an android app, by using two main technologies:
@@ -41,9 +47,19 @@ The main features of the chatbot are:
   <img src="res/entities-dialogflow.png">
 </kbd>
 
-## Bibliography
+## References
   - [Android SDK for Dialogflow](https://github.com/dialogflow/dialogflow-android-client)
   - [Android chatbot with Dialogflow](https://medium.com/@abhi007tyagi/android-chatbot-with-dialogflow-8c0dcc8d8018)
   - [Entities management in Dialogflow](https://dialogflow.com/docs/reference/agent/entities#put_entities_sample)
   - [Read and Write - Firebase](https://firebase.google.com/docs/database/android/read-and-write)
   - [Saving Data - Firebase](https://firebase.google.com/docs/database/admin/save-data)
+
+## Author
+<p align="center">
+  <a href="https://angeligareta.com" alt="Angel Igareta" target="_blank">
+    <img
+      style="max-width: 420px"
+      src="https://lh3.googleusercontent.com/d/1a8GtvbvSP-kPeUBbFue3xuYZIMffFvFW=w600"
+    />
+  </a>
+</p>
